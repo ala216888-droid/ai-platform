@@ -262,7 +262,9 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .ap{transition:grid-template-columns .25s ease}
 .ap-brand .ap-hide{margin-inline-start:auto;width:34px;height:34px}
 .ap-brand>span{min-width:0}
-.ap-brand>span>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+.ap-brand>span>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.ap-brand{gap:8px;padding-inline:14px 10px}
+.ap-brand .ap-hide{width:30px;height:30px}
 .ap.collapsed{grid-template-columns:0 minmax(0,1fr)}
 .ap.collapsed .ap-side{visibility:hidden;overflow:hidden;border:0}
 .ap.collapsed .ap-menu{display:grid}
@@ -613,7 +615,7 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 <script>/* افتح المنصة مباشرة عند تحديث الصفحة بدون ما تبان الصفحة الرئيسية */
 try { if (location.hash === "#app" && JSON.parse(localStorage.getItem("ai_early_signup") || "null")?.phone) document.documentElement.classList.add("ap-boot"); } catch (e) {}
 </script>
-<style>html.ap-boot .ap{display:grid;animation:none}html.ap-boot{overflow:hidden}</style>
+<style>html.ap-boot .ap{display:grid;animation:none}html.ap-boot{overflow:hidden}.ap.noanim{animation:none!important}</style>
 </head>
 <body>
 
@@ -1579,7 +1581,7 @@ if (CONFIG.trialEnabled) {
       setTimeout(() => document.getElementById("phone1")?.focus({ preventScroll: true }), 500);
       toast("سجّل رقمك أول عشان تنفتح لك المنصة", "info"); return;
     }
-    ap.classList.add("open"); document.documentElement.classList.add("ap-lock"); document.documentElement.classList.remove("ap-boot");
+    if (document.documentElement.classList.contains("ap-boot")) ap.classList.add("noanim"); ap.classList.add("open"); document.documentElement.classList.add("ap-lock"); document.documentElement.classList.remove("ap-boot");
     if (location.hash !== "#app") location.hash = "app";
     setTimeout(() => { input.focus({ preventScroll: true }); toBottom(false); }, 60);
   };
