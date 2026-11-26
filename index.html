@@ -1233,9 +1233,9 @@ if (CONFIG.trialEnabled) {
     const ac = new AbortController(); ttsAbort = ac;
     fetch(CONFIG.supabaseUrl + CONFIG.ttsPath, { method: "POST", headers: HDR, signal: ac.signal,
       body: JSON.stringify({ phone, voice: k, text: `هلا والله، أنا ${vName(k)}، مساعدك في المنصة. كيف أقدر أخدمك اليوم؟` }) })
-      .then(r => { if (!r.ok || !/audio/.test(r.headers.get("content-type") || "")) throw 0; return r.blob(); })
+      .then(async r => { if (!r.ok || !/audio/.test(r.headers.get("content-type") || "")) { const j = await r.json().catch(() => ({})); throw new Error((j.error || "http") + (j.detail ? " " + j.detail : "") + " " + r.status); } return r.blob(); })
       .then(bl => { if (ttsAbort === ac) ttsAbort = null; if (pvLoading !== k) return; pvCache[k] = URL.createObjectURL(bl); play(pvCache[k]); })
-      .catch(() => { if (ac.signal.aborted) return; pvLoading = null; drawVoices(); toast("المعاينة غير متاحة الحين، جرّب بعد شوي", "info"); });
+      .catch(err => { if (ac.signal.aborted) return; pvLoading = null; drawVoices(); toast(`المعاينة غير متاحة الحين (رمز: ${String(err && err.message || err).replace("Failed to fetch", "no-connection").slice(0, 60)})`, "info"); });
   };
   drawVoices();
   VBOX.forEach(box => box.addEventListener("click", e => {
