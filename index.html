@@ -412,6 +412,23 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .ap-cn{margin-top:0}.ap-cn em{font-style:normal;margin-inline-start:auto;font-size:11px;color:var(--teal);background:rgba(45,212,191,.12);padding:2px 8px;border-radius:99px}
 .tb-l{font-size:13px}
 @media(max-width:700px){.cn-grid{grid-template-columns:1fr}.tb-l{display:none}}
+.ask{margin:6px 0 4px;padding:14px;border-radius:16px;background:linear-gradient(180deg,rgba(29,78,216,.14),rgba(45,212,191,.05));border:1px solid rgba(56,189,248,.35)}
+.ask-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ask-h .lu{width:18px;height:18px;color:var(--sky)}.ask-h b{font-size:14.5px}
+.ask-q{padding:10px 0;border-top:1px solid var(--line)}
+.ask-q p{margin:0 0 8px;font-weight:600;font-size:15px}
+.ask-o{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.opt{border:1px solid var(--line);background:rgba(255,255,255,.04);color:#C7D7F5;border-radius:99px;padding:6px 14px;cursor:pointer;font:14px "IBM Plex Sans Arabic",sans-serif;min-height:34px}
+.opt:hover{border-color:rgba(56,189,248,.5);color:var(--ink)}
+.opt.on{background:rgba(56,189,248,.2);border-color:var(--sky);color:#fff}
+.ask-q input{width:100%;height:42px;border-radius:11px;border:1px solid var(--line);background:rgba(5,8,17,.6);color:var(--ink);font:15px "IBM Plex Sans Arabic",sans-serif;padding:0 12px}
+.ask-q input:focus{outline:0;border-color:rgba(56,189,248,.6)}
+.ask-f{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ask-go,.ask-skip{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:11px;cursor:pointer;font:600 14px "IBM Plex Sans Arabic",sans-serif}
+.ask-go{border:0;color:#04101F;background:linear-gradient(100deg,#7DD3FC,#38BDF8 40%,#2DD4BF)}
+.ask-skip{border:1px solid var(--line);background:transparent;color:#C7D7F5}
+.ask-go .lu,.ask-skip .lu{width:16px;height:16px}
+.ask.done{opacity:.55;pointer-events:none}
+.ask.done .ask-f{display:none}
 .toast{position:fixed;inset-inline:0;bottom:170px;margin:auto;width:max-content;max-width:calc(100% - 32px);padding:12px 18px;border-radius:14px;background:#0F1A33;border:1px solid rgba(56,189,248,.45);box-shadow:0 20px 40px -10px rgba(0,0,0,.7);font-size:14.5px;text-align:center;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .25s;z-index:120}
 .toast.show{opacity:1;transform:none}
 .ap-shade{display:none}
@@ -969,6 +986,7 @@ if (CONFIG.trialEnabled) {
   const IC = {
     copy: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>', check: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>', redo: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg>'
   , chat: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" /></svg>', del: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /> <path d="M14 11v6" /> <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /> <path d="M3 6h18" /> <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>', eye: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /> <circle cx="12" cy="12" r="3" /></svg>'
+  , help: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M9 9.5a3 2.5 0 016 0c0 2-2 2-3 3.5" /> <path d="M12 17h.01" /></svg>', skip: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4v16" /> <path d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" /></svg>', send: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /> <path d="m21.854 2.147-10.94 10.939" /></svg>'
   };
   let phone = null, history = [], busy = false, remaining = 5, LIMIT = 5, tt = 0;
   let mode = "chat";
@@ -1011,11 +1029,35 @@ if (CONFIG.trialEnabled) {
   };
   const render = text => text.split("```").map((part, i) => {
     if (i % 2 === 0) return blocks(part);
+    if (/^ask\s*\n/i.test(part)) return askCard(part.replace(/^ask\s*\n/i, ""));
     const nl = part.indexOf("\n"), lang = nl > -1 ? part.slice(0, nl).trim() : "", code = (nl > -1 ? part.slice(nl + 1) : part).replace(/\n$/, "");
     const canView = /^(html?|svg|xml|xhtml)$/i.test(lang) || (!lang && /^\s*</.test(code));
     return `<div class="code"><div class="code-h"><span>${esc(lang || "code")}</span><span class="acts2">${canView ? `<button type="button" class="pvb" data-preview>${IC.eye}معاينة</button>` : ""}<button type="button" data-copy-code>${IC.copy}نسخ الكود</button></span></div><pre><code>${esc(code)}</code></pre></div>`;
   }).join("");
 
+
+  /* ---------- بطاقة أسئلة التوضيح ---------- */
+  const askCard = raw => {
+    let qs = [];
+    try { const j = JSON.parse(raw.trim()); qs = (Array.isArray(j) ? j : j.questions || []).filter(q => q && q.q).slice(0, 3); } catch (e) {}
+    if (!qs.length) return "";
+    return `<form class="ask" data-ask>
+      <div class="ask-h">${IC.help}<b>محتاج أعرف كم شي عشان أضبطها لك</b></div>
+      ${qs.map((q, n) => `<div class="ask-q" data-q="${esc(q.q)}">
+        <p>${esc(q.q)}</p>
+        <div class="ask-o">${(q.options || []).slice(0, 4).map(o => `<button type="button" class="opt" data-opt="${esc(String(o))}">${esc(String(o))}</button>`).join("")}</div>
+        <input type="text" maxlength="200" placeholder="${esc(q.placeholder || "أو اكتب إجابتك…")}" aria-label="${esc(q.q)}">
+      </div>`).join("")}
+      <div class="ask-f">
+        <button type="submit" class="ask-go">${IC.send}إرسال</button>
+        <button type="button" class="ask-skip" data-skip>${IC.skip}تخطّي — خلّ المساعد يختار</button>
+      </div>
+    </form>`;
+  };
+  const lockAsks = () => thread.querySelectorAll("form[data-ask]").forEach((f, i, all) => {
+    const last = thread.querySelector(".cm.a:last-of-type form[data-ask]") === f && thread.lastElementChild && thread.lastElementChild.contains(f);
+    if (!last) f.classList.add("done");
+  });
   /* ---------- الرسائل ---------- */
   const userMsg = text => {
     const d = document.createElement("div"); d.className = "cm u";
@@ -1034,7 +1076,7 @@ if (CONFIG.trialEnabled) {
   };
   const typeOut = (d, text) => new Promise(res => {
     const md = d.querySelector(".md"); d.classList.remove("busy");
-    if (still || text.length < 20) { md.innerHTML = render(text); return res(); }
+    if (still || text.length < 20 || /```ask/i.test(text)) { md.innerHTML = render(text); return res(); }
     const dur = Math.min(1800, 300 + text.length * 6), t0 = performance.now(); md.classList.add("caret");
     const step = now => {
       const k = Math.min(1, (now - t0) / dur), n = Math.floor(text.length * k);
@@ -1105,6 +1147,7 @@ if (CONFIG.trialEnabled) {
   };
   const ask = text => {
     text = text.trim(); if (!text || busy || !phone || remaining <= 0) return;
+    thread.querySelectorAll("form[data-ask]").forEach(f => f.classList.add("done"));
     welcome.hidden = true; userMsg(text); history.push({ role: "user", content: text }); save();
     input.value = ""; grow(); request();
   };
@@ -1149,6 +1192,24 @@ if (CONFIG.trialEnabled) {
   vb.addEventListener("click", e => { e.stopPropagation(); const o = vm.classList.toggle("open"); vb.setAttribute("aria-expanded", o); });
   document.addEventListener("click", e => { if (!e.target.closest(".ver")) { vm.classList.remove("open"); vb.setAttribute("aria-expanded", "false"); } });
   vm.querySelector(".vi.on").addEventListener("click", () => vm.classList.remove("open"));
+
+  thread.addEventListener("click", e => {
+    const o = e.target.closest(".opt"); if (!o) return;
+    const q = o.closest(".ask-q"); if (q.closest(".done")) return;
+    q.querySelectorAll(".opt").forEach(x => x.classList.toggle("on", x === o));
+    q.querySelector("input").value = o.dataset.opt;
+  });
+  thread.addEventListener("submit", e => {
+    const f = e.target.closest("form[data-ask]"); if (!f) return;
+    e.preventDefault(); if (f.classList.contains("done") || busy) return;
+    const lines = [...f.querySelectorAll(".ask-q")].map(q => `- ${q.dataset.q}: ${q.querySelector("input").value.trim() || "اختر أنت"}`);
+    f.classList.add("done"); ask("إجاباتي:\n" + lines.join("\n"));
+  });
+  thread.addEventListener("click", e => {
+    const s = e.target.closest("[data-skip]"); if (!s) return;
+    const f = s.closest("form[data-ask]"); if (f.classList.contains("done") || busy) return;
+    f.classList.add("done"); ask("تخطّي — اختر أنت قيم مناسبة وكمّل.");
+  });
   /* ---------- معاينة الكود ---------- */
   const pv = $("pv"), pvFrame = $("pvFrame"), pvOpen = $("pvOpen"); let pvUrl = "";
   const openPreview = code => {
@@ -1196,6 +1257,7 @@ if (CONFIG.trialEnabled) {
       if (m.role === "user") userMsg(m.content);
       else { const d = aiShell(); d.classList.remove("busy"); d.querySelector(".md").innerHTML = render(m.content); actions(d, m.content); }
     });
+    const forms = thread.querySelectorAll("form[data-ask]"); forms.forEach((f, i) => { if (i < forms.length - 1 || history[history.length - 1]?.role !== "assistant") f.classList.add("done"); });
     ap.classList.remove("side"); toBottom(false);
   };
   const blank = () => ({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: "", updated: Date.now(), messages: [] });
