@@ -318,6 +318,23 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .pc-acts .lu{width:16px;height:16px}
 .pcard pre{border-top:1px solid var(--line)}
 .code pre{margin:0;padding:14px 16px;overflow:auto;max-height:420px;text-align:left;direction:ltr;font:13.5px/1.65 ui-monospace,Consolas,monospace;color:#E0F2FE;white-space:pre}
+.ub{display:flex;flex-direction:column;align-items:flex-end;max-width:78%;gap:4px}
+.cm.u .ub .bub{max-width:100%}
+.uacts{display:flex;gap:2px;opacity:0;transition:opacity .2s}
+.cm.u:hover .uacts,.cm.u:focus-within .uacts{opacity:1}
+@media(hover:none){.uacts{opacity:.7}}
+.uacts button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--mute);cursor:pointer}
+.uacts button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
+.uacts .lu{width:15px;height:15px}
+.cm.u.editing .bub,.cm.u.editing .uacts{display:none}
+.uedit{width:min(560px,82vw);background:#0D152B;border:1px solid rgba(56,189,248,.45);border-radius:16px;padding:10px}
+.uedit textarea{width:100%;resize:none;border:0;outline:0;background:transparent;color:var(--ink);font:15.5px/1.7 "IBM Plex Sans Arabic",sans-serif;min-height:60px}
+.uedit-b{display:flex;justify-content:flex-start;gap:8px;margin-top:6px}
+.uedit-b button{border:1px solid var(--line);background:rgba(255,255,255,.05);color:#DCE6FA;padding:7px 16px;border-radius:10px;cursor:pointer;font:600 13.5px "IBM Plex Sans Arabic",sans-serif}
+.uedit-b .go{background:linear-gradient(135deg,#1D4ED8,#2563EB);border-color:transparent;color:#fff}
+.acts .fbb{padding:6px 7px}
+.acts .fbb.on{color:var(--teal);background:rgba(45,212,191,.1)}
+.acts .fbb[data-fb="-1"].on{color:#FCA5A5;background:rgba(248,113,113,.1)}
 .acts{display:flex;gap:2px;margin-top:8px;opacity:.75;transition:opacity .2s}
 .cm.a:hover .acts{opacity:1}
 .acts button{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:var(--mute);cursor:pointer;padding:6px 8px;border-radius:8px;font-size:12.5px}
@@ -1073,6 +1090,7 @@ if (CONFIG.trialEnabled) {
   let chats = [], cur = null;
   const LOGO = '<svg viewBox="0 0 80 80" fill="none"><use href="#logo"/></svg>';
   const IC = {
+    up: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" /> <path d="M7 10v12" /></svg>', down: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" /> <path d="M17 14V2" /></svg>', edit: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg>', again: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /></svg>',
     copy: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>', check: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>', redo: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg>'
   , chat: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" /></svg>', del: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /> <path d="M14 11v6" /> <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /> <path d="M3 6h18" /> <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>', eye: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /> <circle cx="12" cy="12" r="3" /></svg>'
   , help: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M9 9.5a3 2.5 0 016 0c0 2-2 2-3 3.5" /> <path d="M12 17h.01" /></svg>', skip: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4v16" /> <path d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" /></svg>', send: '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /> <path d="m21.854 2.147-10.94 10.939" /></svg>'
@@ -1258,18 +1276,20 @@ if (CONFIG.trialEnabled) {
   vmMic.addEventListener("click", () => { if (vmFinish) { vmFinish(); return; } if (vmEl.dataset.s === "speak") { stopSpeak(); vmSet("idle", "دورك…"); } if (!busy) vmListen(); });
   if (!SR && !TTS) $("apVm").hidden = true;
   /* ---------- الرسائل ---------- */
-  const userMsg = text => {
-    const d = document.createElement("div"); d.className = "cm u";
-    d.innerHTML = `<div class="bub">${esc(text)}</div>`; thread.appendChild(d); return d;
+  const userMsg = (text, i) => {
+    const d = document.createElement("div"); d.className = "cm u"; d.dataset.i = i;
+    d.innerHTML = `<div class="ub"><div class="bub">${esc(text)}</div><div class="uacts"><button type="button" data-u="copy" title="نسخ" aria-label="نسخ">${IC.copy}</button><button type="button" data-u="edit" title="تعديل" aria-label="تعديل الرسالة">${IC.edit}</button><button type="button" data-u="again" title="إعادة الإرسال" aria-label="إعادة الإرسال">${IC.again}</button></div></div>`;
+    thread.appendChild(d); return d;
   };
   const aiShell = () => {
     const d = document.createElement("div"); d.className = "cm a busy";
     d.innerHTML = `<span class="av">${LOGO}</span><div class="body"><div class="who"><b>مساعد المنصة</b></div><div class="md"><span class="thinking">يفكّر<i></i><i></i><i></i></span></div></div>`;
     thread.appendChild(d); return d;
   };
-  const actions = (d, text) => {
-    const a = document.createElement("div"); a.className = "acts";
-    a.innerHTML = `<button type="button" data-act="copy">${IC.copy}نسخ</button>${TTS ? `<button type="button" data-act="speak">${IC.speak}استماع</button>` : ""}<button type="button" data-act="redo">${IC.redo}إعادة التوليد</button>`;
+  const actions = (d, text, i) => {
+    const a = document.createElement("div"); a.className = "acts"; d.dataset.i = i;
+    const fb = history[i] && history[i].fb;
+    a.innerHTML = `<button type="button" data-act="copy">${IC.copy}نسخ</button><button type="button" class="fbb${fb === 1 ? " on" : ""}" data-fb="1" title="رد ممتاز" aria-label="رد ممتاز" aria-pressed="${fb === 1}">${IC.up}</button><button type="button" class="fbb${fb === -1 ? " on" : ""}" data-fb="-1" title="رد غير جيد" aria-label="رد غير جيد" aria-pressed="${fb === -1}">${IC.down}</button>${TTS ? `<button type="button" data-act="speak">${IC.speak}استماع</button>` : ""}<button type="button" data-act="redo">${IC.redo}إعادة التوليد</button>`;
     a.dataset.text = text; d.querySelector(".body").appendChild(a);
     thread.querySelectorAll('[data-act="redo"]').forEach((b, i, all) => { b.hidden = i !== all.length - 1; });
   };
@@ -1333,7 +1353,7 @@ if (CONFIG.trialEnabled) {
       if (r.ok && j.reply) {
         if (j.limit) LIMIT = j.limit;
         history.push({ role: "assistant", content: j.reply }); save();
-        await typeOut(d, j.reply); actions(d, j.reply); setLeft(j.remaining);
+        await typeOut(d, j.reply); actions(d, j.reply, history.length - 1); setLeft(j.remaining);
         const pg = d.querySelector(".pcard [data-preview]"); if (pg && !j.cut && !vmOn) setTimeout(() => pg.click(), 250);
         if (viaVoice) { viaVoice = false; if (!vmReply(j.reply)) speak(j.reply, d.querySelector('[data-act="speak"]')); }
         if (j.cut && remaining > 0) { const c = document.createElement("button"); c.type = "button"; c.className = "cont"; c.dataset.cont = ""; c.textContent = "الرد انقطع — كمّل ↩"; d.querySelector(".body").appendChild(c); }
@@ -1352,7 +1372,7 @@ if (CONFIG.trialEnabled) {
   const ask = text => {
     text = text.trim(); if (!text || busy || !phone || remaining <= 0) return;
     thread.querySelectorAll("form[data-ask]").forEach(f => f.classList.add("done"));
-    welcome.hidden = true; userMsg(text); history.push({ role: "user", content: text }); save();
+    welcome.hidden = true; userMsg(text, history.length); history.push({ role: "user", content: text }); save();
     input.value = ""; grow(); request();
   };
 
@@ -1458,9 +1478,9 @@ if (CONFIG.trialEnabled) {
     thread.querySelectorAll(".cm").forEach(m => m.remove());
     history = cur ? cur.messages.slice() : [];
     welcome.hidden = history.length > 0;
-    history.forEach(m => {
-      if (m.role === "user") userMsg(m.content);
-      else { const d = aiShell(); d.classList.remove("busy"); d.querySelector(".md").innerHTML = render(m.content); actions(d, m.content); }
+    history.forEach((m, i) => {
+      if (m.role === "user") userMsg(m.content, i);
+      else { const d = aiShell(); d.classList.remove("busy"); d.querySelector(".md").innerHTML = render(m.content); actions(d, m.content, i); }
     });
     const forms = thread.querySelectorAll("form[data-ask]"); forms.forEach((f, i) => { if (i < forms.length - 1 || history[history.length - 1]?.role !== "assistant") f.classList.add("done"); });
     ap.classList.remove("side"); toBottom(false);
@@ -1497,10 +1517,59 @@ if (CONFIG.trialEnabled) {
     catch (e) { btn.textContent = "انسخ يدوياً"; }
     setTimeout(() => btn.innerHTML = IC.copy + label, 1800);
   };
+  const cancelEdit = m => { m.classList.remove("editing"); const b = m.querySelector(".uedit"); if (b) b.remove(); };
+  const resendFrom = (i, text) => {
+    if (busy || remaining <= 0) return;
+    stopSpeak();
+    history.splice(i);
+    const nodes = [...thread.querySelectorAll(".cm")]; const k = nodes.findIndex(n => +n.dataset.i === i);
+    if (k > -1) nodes.slice(k).forEach(n => n.remove());
+    save(); viaVoice = false; ask(text);
+  };
   thread.addEventListener("click", e => {
     const pb = e.target.closest("[data-preview]"); if (pb) return openPreview(pb.closest(".code").querySelector("code").textContent);
     const tc = e.target.closest("[data-toggle-code]"); if (tc) { const p = tc.closest(".code").querySelector("pre"); p.hidden = !p.hidden; tc.querySelector("span").textContent = p.hidden ? "الكود" : "إخفاء الكود"; return; }
     const cc = e.target.closest("[data-copy-code]"); if (cc) return copy(cc.closest(".code").querySelector("code").textContent, cc, cc.closest(".pcard") ? "نسخ" : "نسخ الكود");
+    const fbb = e.target.closest("[data-fb]");
+    if (fbb) {
+      const m = fbb.closest(".cm"), i = +m.dataset.i, v = +fbb.dataset.fb, h = history[i];
+      if (!h || h.role !== "assistant") return;
+      h.fb = h.fb === v ? 0 : v; save();
+      m.querySelectorAll("[data-fb]").forEach(b => { const on = +b.dataset.fb === h.fb; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+      if (h.fb) {
+        toast(h.fb === 1 ? "شكراً لتقييمك 💙" : "شكراً، بنستفيد من ملاحظتك لتحسين الردود 🙏");
+        const q = [...history.slice(0, i)].reverse().find(x => x.role === "user");
+        fetch(CONFIG.supabaseUrl + "/rest/v1/ai_feedback", { method: "POST", headers: { ...HDR, Prefer: "return=minimal" }, body: JSON.stringify({ rating: h.fb, prompt: (q ? q.content : "").slice(0, 4000), reply: h.content.slice(0, 12000), mode }) }).catch(() => {});
+      }
+      return;
+    }
+    const ub = e.target.closest("[data-u]");
+    if (ub) {
+      const m = ub.closest(".cm"), i = +m.dataset.i, h = history[i]; if (!h) return;
+      if (ub.dataset.u === "copy") { navigator.clipboard?.writeText(h.content).then(() => toast("تم النسخ ✓")).catch(() => {}); return; }
+      if (busy) return toast("انتظر لين يخلص الرد الحالي.");
+      if (remaining <= 0) return toast("خلصت رسائلك التجريبية 🎉");
+      if (ub.dataset.u === "again") return resendFrom(i, h.content);
+      // تعديل
+      thread.querySelectorAll(".cm.u.editing").forEach(x => cancelEdit(x));
+      m.classList.add("editing");
+      const box = document.createElement("div"); box.className = "uedit";
+      box.innerHTML = `<textarea rows="3" maxlength="1500" aria-label="تعديل الرسالة"></textarea><div class="uedit-b"><button type="button" data-ue="cancel">إلغاء</button><button type="button" class="go" data-ue="send">إرسال</button></div>`;
+      m.querySelector(".ub").appendChild(box);
+      const ta = box.querySelector("textarea"); ta.value = h.content; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+      ta.style.height = Math.min(ta.scrollHeight + 2, 260) + "px";
+      ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight + 2, 260) + "px"; });
+      ta.addEventListener("keydown", ev => { if (ev.key === "Enter" && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); box.querySelector('[data-ue="send"]').click(); } if (ev.key === "Escape") { ev.stopPropagation(); cancelEdit(m); } });
+      return;
+    }
+    const ue = e.target.closest("[data-ue]");
+    if (ue) {
+      const m = ue.closest(".cm");
+      if (ue.dataset.ue === "cancel") return cancelEdit(m);
+      const v = m.querySelector(".uedit textarea").value.trim(); if (!v) return;
+      if (busy) return toast("انتظر لين يخلص الرد الحالي.");
+      return resendFrom(+m.dataset.i, v);
+    }
     const ac = e.target.closest("[data-act]");
     if (ac && ac.dataset.act === "copy") return copy(ac.parentElement.dataset.text, ac, "نسخ");
     if (ac && ac.dataset.act === "speak") { if (speakingBtn === ac) stopSpeak(); else speak(ac.parentElement.dataset.text, ac); return; }
