@@ -109,6 +109,20 @@ input{flex:1;width:100%}
 @keyframes spin{to{transform:rotate(360deg)}}
 .core{transform-origin:300px 300px;animation:breathe 4s ease-in-out infinite}
 @keyframes breathe{50%{transform:scale(1.05)}}
+/* الشعار ثلاثي الأبعاد */
+.orbit{perspective:1100px}
+.orbit>svg{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.c3d{position:absolute;left:37.5%;top:37.5%;width:25%;height:25%;perspective:700px;pointer-events:none}
+.c3d-rot{position:absolute;inset:0;transform-style:preserve-3d;animation:c3dSway 9s ease-in-out infinite}
+.c3d-rot>i{position:absolute;inset:0;border-radius:29.4%;background:linear-gradient(135deg,#0A1A44,#0B3A9E);border:1px solid rgba(56,189,248,.18);transform:translateZ(var(--z))}
+.c3d-face{position:absolute;inset:0;border-radius:29.4%;overflow:hidden;background:linear-gradient(135deg,#0B1120,#1D4ED8);transform:translateZ(1px);box-shadow:0 0 50px rgba(56,189,248,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+.c3d-face svg{width:100%;height:100%;display:block}
+.c3d-glare{position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.16) 48%,transparent 60%);animation:c3dGlare 9s ease-in-out infinite}
+.c3d-shadow{position:absolute;left:8%;right:8%;bottom:-22%;height:16%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6),transparent);filter:blur(6px);animation:c3dShadow 9s ease-in-out infinite}
+@keyframes c3dSway{0%,100%{transform:rotateY(-28deg) rotateX(12deg) translateY(0)}50%{transform:rotateY(28deg) rotateX(-8deg) translateY(-6px)}}
+@keyframes c3dGlare{0%,100%{transform:translateX(-30%)}50%{transform:translateX(30%)}}
+@keyframes c3dShadow{0%,100%{transform:scaleX(.9);opacity:.8}50%{transform:scaleX(1);opacity:.55}}
+@media(prefers-reduced-motion:reduce){.c3d-rot,.c3d-glare,.c3d-shadow{animation:none}.c3d-rot{transform:rotateY(-18deg) rotateX(8deg)}}
 .caption{text-align:center;margin-top:6px;color:var(--mute);font-size:15px}
 .caption b{color:var(--ink);font-weight:500}
 
@@ -704,8 +718,11 @@ try { if (location.hash === "#app" && JSON.parse(localStorage.getItem("ai_early_
             <circle cx="300" cy="130" r="3" fill="#fff"/>
           </g>
           <!-- النواة -->
-          <g class="core"><svg x="225" y="225" width="150" height="150" viewBox="0 0 80 80"><use href="#logo"/></svg></g>
         </svg>
+        <div class="c3d" aria-hidden="true"><div class="c3d-shadow"></div><div class="c3d-rot">
+          <i style="--z:-14px"></i><i style="--z:-12px"></i><i style="--z:-10px"></i><i style="--z:-8px"></i><i style="--z:-6px"></i><i style="--z:-4px"></i><i style="--z:-2px"></i>
+          <div class="c3d-face"><svg viewBox="6 6 68 68" fill="none"><defs><linearGradient id="g3bg" x1="6" y1="6" x2="74" y2="74" gradientUnits="userSpaceOnUse"><stop stop-color="#0B1120"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient><linearGradient id="g3st" x1="16" y1="16" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#38BDF8"/><stop offset=".5" stop-color="#FFFFFF"/><stop offset="1" stop-color="#2DD4BF"/></linearGradient><filter id="g3gl" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="2.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter></defs><rect x="6" y="6" width="68" height="68" fill="url(#g3bg)"/><path d="M40 15L46.5 33.5L65 40L46.5 46.5L40 65L33.5 46.5L15 40L33.5 33.5L40 15Z" stroke="#38BDF8" stroke-opacity=".35" stroke-width="2" stroke-linejoin="round" fill="#38BDF8" fill-opacity=".06"/><path class="trace" d="M40 15L46.5 33.5L65 40L46.5 46.5L40 65L33.5 46.5L15 40L33.5 33.5L40 15Z" stroke="url(#g3st)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" filter="url(#g3gl)"/><circle class="pulse" cx="40" cy="40" r="5.5" fill="#FFFFFF" filter="url(#g3gl)"/></svg><b class="c3d-glare"></b></div>
+        </div></div>
       </div>
       <p class="caption"><b>نجمع لك أقوى الذكاء الاصطناعي</b> — ونعطيك الإجابة فوراً</p>
       <div class="models-row" aria-label="النماذج المدعومة"><span>ChatGPT</span><span>Gemini</span><span>Claude</span><span>DeepSeek</span><span>Grok</span><span>Qwen</span><span>Mistral</span><span>Llama</span><span>Perplexity</span><span class="more">وغيرها</span></div>
@@ -1021,6 +1038,16 @@ try { if (location.hash === "#app" && JSON.parse(localStorage.getItem("ai_early_
 
 <script>
 {
+/* ===== إمالة ثلاثية الأبعاد للمدار مع حركة الماوس ===== */
+(() => {
+  const o = document.querySelector(".orbit"); if (!o || matchMedia("(prefers-reduced-motion: reduce)").matches || !matchMedia("(pointer:fine)").matches) return;
+  const s = o.querySelector(":scope>svg"), c = o.querySelector(".c3d");
+  addEventListener("pointermove", e => {
+    const r = o.getBoundingClientRect(); const x = (e.clientX - (r.left + r.width / 2)) / innerWidth, y = (e.clientY - (r.top + r.height / 2)) / innerHeight;
+    const t = `rotateX(${(-y * 14).toFixed(2)}deg) rotateY(${(x * 14).toFixed(2)}deg)`;
+    s.style.transform = t; c.style.transform = t + " translateZ(40px)";
+  }, { passive: true });
+})();
 /* ===== الإعدادات ===== */
 const CONFIG = {
   brand: "منصة الذكاء الاصطناعي",   // غيّره بعد اختيار الاسم
