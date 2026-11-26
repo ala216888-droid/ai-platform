@@ -712,7 +712,7 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
   <div class="reveal">
     <span class="kicker">ادفع بطريقتك</span>
     <h2>اشترك واشحن رصيدك بالدفع المحلي</h2>
-    <p class="sub" style="margin-bottom:0">بدون فيزا وبدون قيود. اختر الطريقة اللي تناسبك واشحن رصيدك بسهولة تامة.</p>
+    <p class="sub" style="margin-bottom:0">بدون بطاقة بنكية وبكل سهولة. اختر الطريقة اللي تناسبك واشحن رصيدك بسهولة تامة.</p>
   </div>
   <div class="methods reveal" id="methods"></div>
 </div></section>
@@ -932,7 +932,7 @@ const services = [
   ["مقاطع الموشن والفيديو","صمّم فيديوهات ترويجية ومقاطع متحركة لإعلاناتك بسهولة.",'<path d="m12.296 3.464 3.02 3.956" /> <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z" /> <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /> <path d="m6.18 5.276 3.1 3.899" />'],
   ["إدارة حسابات التواصل","جدول منشوراتك واكتب خطط المحتوى والحملات الإعلانية تلقائياً.",'<path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /> <path d="M8 13h.01" /> <path d="M12 13h.01" /> <path d="M16 13h.01" /> <path d="M8 17h.01" /> <path d="M12 17h.01" /> <path d="M16 17h.01" />'],
   ["الرد التلقائي على العملاء","مساعد ذكي يرد على عملائك، يجاوب على الاستفسارات ويجمع الطلبات 24/7.",'<path d="M12 8V4H8" /> <rect width="16" height="12" x="4" y="8" rx="2" /> <path d="M2 14h2" /> <path d="M20 14h2" /> <path d="M15 13v2" /> <path d="M9 13v2" />'],
-  ["دعم الدفع المحلي","اشترك واشحن رصيدك عبر وسائل الدفع المحلية وبدون قيود.",'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /> <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />']
+  ["دعم الدفع المحلي","اشترك واشحن رصيدك عبر وسائل الدفع المحلية بكل سهولة.",'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /> <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />']
 ];
 document.getElementById("cards").innerHTML = services.map(([t,p,d]) => `<div class="card reveal">${ic(d)}<h3>${t}</h3><p>${p}</p></div>`).join("");
 
@@ -1340,6 +1340,7 @@ if (CONFIG.trialEnabled) {
   const errs = {
     not_registered: "رقمك غير مسجّل. سجّل من الصفحة وارجع جرّب.",
     used_up: "خلصت رسائلك التجريبية. خصمك محجوز، ونبلغك أول ما تنطلق المنصة!",
+    blocked: "عذراً، ما نقدر نساعد في هذا الطلب لأنه يخالف سياسة الاستخدام. ما انحسبت عليك الرسالة — جرّب طلب ثاني 🙏",
     ip_limit: "وصلت للحد اليومي من هذا الجهاز. جرّب بكرة.",
     day_limit: "التجربة وصلت حدها اليومي من كثر الإقبال 🙏 جرّب بكرة.",
     ai_failed: "صار خطأ مؤقت في الرد، ورجّعنا لك رسالتك.",
@@ -1360,6 +1361,7 @@ if (CONFIG.trialEnabled) {
       } else {
         d.classList.remove("busy");
         d.querySelector(".md").innerHTML = `<div class="cerr">${esc(errs[j.error] || "تعذّر الاتصال، حاول مرة ثانية.")}${j.error === "ai_failed" || !j.error ? '<button type="button" data-retry>إعادة المحاولة</button>' : ""}</div>`;
+        if (j.error === "blocked" && history[history.length - 1]?.role === "user") { history.pop(); save(); }
         if (j.error === "used_up") setLeft(0);
       }
     } catch (e) {
