@@ -304,6 +304,19 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .code-h button{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:#C7D7F5;cursor:pointer;font:12.5px "IBM Plex Sans Arabic",sans-serif;padding:4px 6px;border-radius:6px}
 .code-h button:hover{background:rgba(255,255,255,.08)}
 .code-h .lu{width:14px;height:14px}
+.pcard{background:linear-gradient(135deg,rgba(29,78,216,.16),rgba(3,6,14,.9));border-color:rgba(96,165,250,.3)}
+.pc-top{display:flex;align-items:center;gap:12px;padding:14px 14px 10px}
+.pc-ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(56,189,248,.14);color:var(--sky)}
+.pc-ic .lu{width:22px;height:22px}
+.pc-t{display:flex;flex-direction:column;min-width:0}
+.pc-t b{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-t small{color:var(--mute);font-size:12.5px}
+.pc-acts{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
+.pc-acts button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#DCE6FA;cursor:pointer;padding:8px 13px;border-radius:10px;font:600 13.5px "IBM Plex Sans Arabic",sans-serif}
+.pc-acts button:hover{background:rgba(255,255,255,.1)}
+.pc-acts .pc-go{background:linear-gradient(135deg,#1D4ED8,#2563EB);border-color:transparent;color:#fff}
+.pc-acts .lu{width:16px;height:16px}
+.pcard pre{border-top:1px solid var(--line)}
 .code pre{margin:0;padding:14px 16px;overflow:auto;max-height:420px;text-align:left;direction:ltr;font:13.5px/1.65 ui-monospace,Consolas,monospace;color:#E0F2FE;white-space:pre}
 .acts{display:flex;gap:2px;margin-top:8px;opacity:.75;transition:opacity .2s}
 .cm.a:hover .acts{opacity:1}
@@ -349,7 +362,11 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .vi b{display:block;font-size:14px}.vi small{display:block;font-size:12px;color:var(--mute)}
 .vi .ok{width:16px;height:16px;color:var(--teal)}
 .vi .lk{width:14px;height:14px;color:var(--mute)}
-@media(max-width:600px){.mdb span{display:none}.mdb.on span{display:inline}.vbtn span{display:none}}
+.ap-box{container-type:inline-size}
+.ap-tools{flex-wrap:nowrap;min-width:0}
+@container (max-width:600px){.mdb span{display:none}.mdb.on span{display:inline}.vbtn span{display:none}.vbtn{padding:0 8px}.ap-tools{gap:5px}}
+@container (max-width:440px){.ap-tools{gap:4px}.tb{height:34px;padding:0 8px}.modes{padding:2px}.mdb{height:30px;padding:0 8px}.mdb.on span{display:none}.mdb .lk{display:none}.vbtn .lu:last-child{display:none}.ap-mic,.ap-send{width:36px;height:36px;border-radius:12px}.ap-mic .lu{width:18px;height:18px}}
+@container (max-width:340px){.tb.lockd[data-lock="رفع الملفات والصور"]{display:none}}
 .ap-vm{color:var(--teal)}
 .vm{position:fixed;inset:0;z-index:118;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 18px 34px;background:radial-gradient(700px 520px at 50% 45%,rgba(29,78,216,.35),transparent 70%),#03060E;overflow:hidden;color:var(--ink)}
 .vm .lu{width:22px;height:22px}
@@ -1098,6 +1115,11 @@ if (CONFIG.trialEnabled) {
     if (/^ask\s*\n/i.test(part)) return askCard(part.replace(/^ask\s*\n/i, ""));
     const nl = part.indexOf("\n"), lang = nl > -1 ? part.slice(0, nl).trim() : "", code = (nl > -1 ? part.slice(nl + 1) : part).replace(/\n$/, "");
     const canView = /^(html?|svg|xml|xhtml)$/i.test(lang) || (!lang && /^\s*</.test(code));
+    const page = canView && (/<html|<!doctype/i.test(code) || code.split("\n").length > 14);
+    if (page) {
+      const ttl = (code.match(/<title[^>]*>([^<]{1,60})<\/title>/i) || [])[1] || "صفحة ويب";
+      return `<div class="code pcard"><div class="pc-top"><span class="pc-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /> <path d="M10 4v4" /> <path d="M2 8h20" /> <path d="M6 4v4" /></svg></span><span class="pc-t"><b>${esc(ttl.trim())}</b><small>صفحة HTML · ${code.split("\n").length} سطر</small></span></div><div class="pc-acts"><button type="button" class="pc-go" data-preview>${IC.eye}معاينة</button><button type="button" data-toggle-code><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 16 4-4-4-4" /> <path d="m6 8-4 4 4 4" /> <path d="m14.5 4-5 16" /></svg><span>الكود</span></button><button type="button" data-copy-code>${IC.copy}نسخ</button></div><pre hidden><code>${esc(code)}</code></pre></div>`;
+    }
     return `<div class="code"><div class="code-h"><span>${esc(lang || "code")}</span><span class="acts2">${canView ? `<button type="button" class="pvb" data-preview>${IC.eye}معاينة</button>` : ""}<button type="button" data-copy-code>${IC.copy}نسخ الكود</button></span></div><pre><code>${esc(code)}</code></pre></div>`;
   }).join("");
 
@@ -1277,6 +1299,7 @@ if (CONFIG.trialEnabled) {
         if (j.limit) LIMIT = j.limit;
         history.push({ role: "assistant", content: j.reply }); save();
         await typeOut(d, j.reply); actions(d, j.reply); setLeft(j.remaining);
+        const pg = d.querySelector(".pcard [data-preview]"); if (pg && !j.cut && !vmOn) setTimeout(() => pg.click(), 250);
         if (viaVoice) { viaVoice = false; if (!vmReply(j.reply)) speak(j.reply, d.querySelector('[data-act="speak"]')); }
         if (j.cut && remaining > 0) { const c = document.createElement("button"); c.type = "button"; c.className = "cont"; c.dataset.cont = ""; c.textContent = "الرد انقطع — كمّل ↩"; d.querySelector(".body").appendChild(c); }
       } else {
@@ -1441,7 +1464,8 @@ if (CONFIG.trialEnabled) {
   };
   thread.addEventListener("click", e => {
     const pb = e.target.closest("[data-preview]"); if (pb) return openPreview(pb.closest(".code").querySelector("code").textContent);
-    const cc = e.target.closest("[data-copy-code]"); if (cc) return copy(cc.closest(".code").querySelector("code").textContent, cc, "نسخ الكود");
+    const tc = e.target.closest("[data-toggle-code]"); if (tc) { const p = tc.closest(".code").querySelector("pre"); p.hidden = !p.hidden; tc.querySelector("span").textContent = p.hidden ? "الكود" : "إخفاء الكود"; return; }
+    const cc = e.target.closest("[data-copy-code]"); if (cc) return copy(cc.closest(".code").querySelector("code").textContent, cc, cc.closest(".pcard") ? "نسخ" : "نسخ الكود");
     const ac = e.target.closest("[data-act]");
     if (ac && ac.dataset.act === "copy") return copy(ac.parentElement.dataset.text, ac, "نسخ");
     if (ac && ac.dataset.act === "speak") { if (speakingBtn === ac) stopSpeak(); else speak(ac.parentElement.dataset.text, ac); return; }
