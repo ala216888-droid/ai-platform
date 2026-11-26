@@ -875,7 +875,7 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
     <p class="vm-cap" id="vmCap"></p>
   </div>
   <div class="vm-bot">
-  <p class="vm-note">🎧 هذا صوت <b>تجريبي</b> من متصفحك — في النسخة الكاملة صوت أوضح وأقرب للإنسان.</p>
+  <p class="vm-note">🎧 الوضع الصوتي <b>تجريبي</b> — قد يتأخر الرد الصوتي ثواني بسيطة.</p>
   <div class="vm-ctrl">
     <button type="button" class="vm-btn" id="vmMic" aria-label="تكلّم"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <rect x="9" y="2" width="6" height="13" rx="3" /></svg></button>
     <button type="button" class="vm-btn end" id="vmEnd" aria-label="إنهاء"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg></button>
@@ -918,6 +918,7 @@ const CONFIG = {
   supabaseUrl: "https://igiljmvtqpwqobcxbzzq.supabase.co",
   supabaseKey: "sb_publishable_6dQ69QHa-EZHSOISboQfKg_DwFToglV",  // مفتاح publishable (آمن للنشر)
   trialPath: "/functions/v1/try-ai",
+  ttsPath: "/functions/v1/tts",        // الصوت الطبيعي (منصت) — اتركه فاضي "" لإيقافه
   trialEnabled: true    // ← غيّرها إلى false إذا تبي توقف التجربة
 };
 
@@ -1180,10 +1181,53 @@ if (CONFIG.trialEnabled) {
   const speakable = s => s.replace(/```[\s\S]*?(```|$)/g, " (تجد الكود في الرسالة) ").replace(/`([^`]+)`/g, "$1").replace(/[*#>|_~]/g, "").replace(/https?:\/\/\S+/g, "الرابط").replace(/\s+/g, " ").trim();
   const arVoice = () => { const vs = speechSynthesis.getVoices(); return vs.find(v => /^ar(-|_)SA/i.test(v.lang)) || vs.find(v => /^ar/i.test(v.lang)) || null; };
   if (TTS) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; }
-  const stopSpeak = () => { if (TTS) speechSynthesis.cancel(); if (speakingBtn) { speakingBtn.innerHTML = IC.speak + "استماع"; speakingBtn = null; } };
+  let audioEl = null, ttsAbort = null, natOff = false, aCtx = null, raf = 0;
+  const stopSpeak = () => { if (ttsAbort) { ttsAbort.abort(); ttsAbort = null; } if (audioEl) { audioEl.onended = audioEl.onerror = null; audioEl.pause(); URL.revokeObjectURL(audioEl.src); audioEl = null; } cancelAnimationFrame(raf); { const lg = document.querySelector(".vm-logo"); if (lg) lg.style.transform = ""; } if (TTS) speechSynthesis.cancel(); if (speakingBtn) { speakingBtn.innerHTML = IC.speak + "استماع"; speakingBtn = null; } };
+  /* صوت طبيعي من منصت عبر السيرفر، وإذا تعذّر نرجع لصوت المتصفح */
+  const clipSpeech = s => { s = speakable(s); if (s.length <= 680) return s; const c = s.slice(0, 680); const k = Math.max(c.lastIndexOf("."), c.lastIndexOf("؟"), c.lastIndexOf("!"), c.lastIndexOf("،")); return c.slice(0, k > 300 ? k + 1 : 680); };
+  const pulse = el => {
+    const logo = document.querySelector(".vm-logo"); if (!logo || !vmOn) return;
+    try {
+      aCtx = aCtx || new (window.AudioContext || window.webkitAudioContext)(); aCtx.resume();
+      const an = aCtx.createAnalyser(); an.fftSize = 256; aCtx.createMediaElementSource(el).connect(an); an.connect(aCtx.destination);
+      const buf = new Uint8Array(an.frequencyBinCount);
+      const loop = () => { an.getByteFrequencyData(buf); let s = 0; for (let i = 0; i < 40; i++) s += buf[i]; logo.style.transform = `scale(${1 + Math.min(s / 40 / 255, 1) * 0.22})`; raf = requestAnimationFrame(loop); };
+      loop();
+    } catch (e) {}
+  };
   const speak = (text, btn, onDone) => {
-    if (!TTS) { onDone && onDone(); return; }
     stopSpeak();
+    const clip = clipSpeech(text);
+    if (!clip) { onDone && onDone(); return; }
+    if (natOff || !CONFIG.ttsPath || !phone) return browserSpeak(text, btn, onDone);
+    if (btn) { speakingBtn = btn; btn.innerHTML = IC.stop + "يجهّز…"; }
+    const ac = new AbortController(); ttsAbort = ac;
+    const fail = () => { if (ttsAbort === ac) ttsAbort = null; if (ac.signal.aborted) return; browserSpeak(text, btn, onDone); };
+    fetch(CONFIG.supabaseUrl + CONFIG.ttsPath, { method: "POST", headers: HDR, body: JSON.stringify({ phone, text: clip }), signal: ac.signal })
+      .then(async r => {
+        if (!r.ok || !/audio/.test(r.headers.get("content-type") || "")) {
+          const j = await r.json().catch(() => ({}));
+          if (j.error === "off" || r.status === 404) natOff = true;
+          if (j.error === "tts_limit") { natOff = true; if (!vmOn) toast("خلص الصوت الطبيعي لليوم، بنقرأ بصوت المتصفح."); }
+          throw new Error(j.error || r.status);
+        }
+        return r.blob();
+      })
+      .then(b => {
+        if (ac.signal.aborted) return;
+        ttsAbort = null;
+        const a = new Audio(URL.createObjectURL(b)); audioEl = a;
+        if (btn) btn.innerHTML = IC.stop + "إيقاف";
+        const end = () => { if (audioEl === a) { const sb = speakingBtn; stopSpeak(); if (sb && sb !== btn) {} } onDone && onDone(); };
+        a.onended = end; a.onerror = () => { if (audioEl === a) { audioEl = null; browserSpeak(text, btn, onDone); } };
+        pulse(a);
+        a.play().catch(() => { if (audioEl === a) { audioEl = null; browserSpeak(text, btn, onDone); } });
+      })
+      .catch(fail);
+  };
+  const browserSpeak = (text, btn, onDone) => {
+    if (!TTS) { if (speakingBtn === btn) stopSpeak(); onDone && onDone(); return; }
+    if (TTS) speechSynthesis.cancel();
     const parts = speakable(text).match(/[^.!؟?\n،]{1,180}[.!؟?\n،]?/g) || [];
     if (!parts.length) { onDone && onDone(); return; }
     const v = arVoice();
@@ -1199,7 +1243,7 @@ if (CONFIG.trialEnabled) {
   };
   if (!SR) micBtn.hidden = true;
   const stopListen = () => { listening = false; micBtn.classList.remove("rec"); micBtn.setAttribute("aria-label", "تكلّم"); input.placeholder = PH[mode]; };
-  const betaNote = () => { try { if (localStorage.getItem("ai_voice_beta")) return; localStorage.setItem("ai_voice_beta", "1"); } catch (e) {} toast("🎙️ الصوت تجريبي حالياً — في النسخة الكاملة يكون أدق وأوضح."); };
+  const betaNote = () => { try { if (localStorage.getItem("ai_voice_beta")) return; localStorage.setItem("ai_voice_beta", "1"); } catch (e) {} toast("🎙️ الميزات الصوتية تجريبية حالياً — نطوّرها باستمرار."); };
   micBtn.addEventListener("click", () => {
     betaNote();
     if (!SR) return;
@@ -1265,7 +1309,7 @@ if (CONFIG.trialEnabled) {
     vmSet("speak", "يتكلم…"); vmCap.textContent = speakable(text).slice(0, 220);
     let fired = false;
     const next = () => { if (fired) return; fired = true; clearTimeout(wd); if (vmOn && vmEl.dataset.s === "speak") { vmSet("idle", "دورك…"); setTimeout(vmListen, 350); } };
-    const wd = setTimeout(() => { stopSpeak(); next(); }, 5000 + speakable(text).length * 110);   // احتياط لو المتصفح ما بلّغ بنهاية الصوت
+    const wd = setTimeout(() => { stopSpeak(); next(); }, 12000 + clipSpeech(text).length * 110);   // احتياط لو المتصفح ما بلّغ بنهاية الصوت
     speak(text, null, next);
     return true;
   };
