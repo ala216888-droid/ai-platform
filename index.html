@@ -1203,7 +1203,7 @@ if (CONFIG.trialEnabled) {
   /* ---------- الوضع الصوتي (شاشة كاملة) ---------- */
   const vmEl = $("vm"), vmStatus = $("vmStatus"), vmCap = $("vmCap"), vmMic = $("vmMic");
   let vmOn = false, vmRec = null;
-  const vmSet = (s, msg) => { vmEl.dataset.s = s; vmStatus.textContent = msg; vmMic.classList.toggle("on", s === "listen"); $("vmLeft").textContent = remaining > 0 ? `باقي ${remaining} ${plural(remaining)}` : "انتهت التجربة"; };
+  const vmSet = (s, msg) => { vmEl.dataset.s = s; vmStatus.textContent = msg; vmMic.classList.toggle("on", s === "listen"); $("vmLeft").textContent = LIMIT >= 1000 ? "حساب المالك" : remaining > 0 ? `باقي ${remaining} ${plural(remaining)}` : "انتهت التجربة"; };
   let vmFinish = null;
   const vmListen = () => {
     if (!vmOn) return;
@@ -1290,9 +1290,10 @@ if (CONFIG.trialEnabled) {
   /* ---------- الرصيد ---------- */
   const setLeft = n => {
     remaining = Math.max(0, n);
-    $("apLeft").textContent = `${remaining} / ${LIMIT}`;
-    $("apBar").style.width = `${(remaining / LIMIT) * 100}%`;
-    $("apPill").textContent = remaining > 0 ? `باقي ${remaining} ${plural(remaining)}` : "انتهت التجربة";
+    const unl = LIMIT >= 1000;
+    $("apLeft").textContent = unl ? "∞" : `${remaining} / ${LIMIT}`;
+    $("apBar").style.width = unl ? "100%" : `${(remaining / LIMIT) * 100}%`;
+    $("apPill").textContent = unl ? "حساب المالك" : remaining > 0 ? `باقي ${remaining} ${plural(remaining)}` : "انتهت التجربة";
     if (remaining <= 0) showEnd();
     updateSend();
   };
