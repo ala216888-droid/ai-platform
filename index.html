@@ -412,6 +412,8 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .ap-cn{margin-top:0}.ap-cn em{font-style:normal;margin-inline-start:auto;font-size:11px;color:var(--teal);background:rgba(45,212,191,.12);padding:2px 8px;border-radius:99px}
 .tb-l{font-size:13px}
 @media(max-width:700px){.cn-grid{grid-template-columns:1fr}.tb-l{display:none}}
+.cont{margin-top:8px;border:1px solid rgba(56,189,248,.45);background:rgba(56,189,248,.1);color:var(--sky);border-radius:10px;padding:7px 14px;cursor:pointer;font:600 13.5px "IBM Plex Sans Arabic",sans-serif}
+.cont:hover{background:rgba(56,189,248,.2)}
 .ask{margin:6px 0 4px;padding:14px;border-radius:16px;background:linear-gradient(180deg,rgba(29,78,216,.14),rgba(45,212,191,.05));border:1px solid rgba(56,189,248,.35)}
 .ask-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ask-h .lu{width:18px;height:18px;color:var(--sky)}.ask-h b{font-size:14.5px}
 .ask-q{padding:10px 0;border-top:1px solid var(--line)}
@@ -1134,6 +1136,7 @@ if (CONFIG.trialEnabled) {
         if (j.limit) LIMIT = j.limit;
         history.push({ role: "assistant", content: j.reply }); save();
         await typeOut(d, j.reply); actions(d, j.reply); setLeft(j.remaining);
+        if (j.cut && remaining > 0) { const c = document.createElement("button"); c.type = "button"; c.className = "cont"; c.dataset.cont = ""; c.textContent = "الرد انقطع — كمّل ↩"; d.querySelector(".body").appendChild(c); }
       } else {
         d.classList.remove("busy");
         d.querySelector(".md").innerHTML = `<div class="cerr">${esc(errs[j.error] || "تعذّر الاتصال، حاول مرة ثانية.")}${j.error === "ai_failed" || !j.error ? '<button type="button" data-retry>إعادة المحاولة</button>' : ""}</div>`;
@@ -1301,6 +1304,8 @@ if (CONFIG.trialEnabled) {
       if (history[history.length - 1]?.role === "assistant") history.pop();
       ac.closest(".cm").remove(); request(); return;
     }
+    const ct = e.target.closest("[data-cont]");
+    if (ct && !busy && remaining > 0) { ct.remove(); ask("كمّل من حيث وقفت بالضبط بدون ما تعيد اللي كتبته."); return; }
     const rt = e.target.closest("[data-retry]");
     if (rt && !busy) { rt.closest(".cm").remove(); request(); }
   });
