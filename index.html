@@ -261,6 +261,8 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .ap-menu{display:none}
 .ap{transition:grid-template-columns .25s ease}
 .ap-brand .ap-hide{margin-inline-start:auto;width:34px;height:34px}
+.ap-brand>span{min-width:0}
+.ap-brand>span>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
 .ap.collapsed{grid-template-columns:0 minmax(0,1fr)}
 .ap.collapsed .ap-side{visibility:hidden;overflow:hidden;border:0}
 .ap.collapsed .ap-menu{display:grid}
@@ -608,6 +610,10 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 @media(max-width:600px){.grid,.steps,.methods,.two{grid-template-columns:1fr}.lead{font-size:16.5px}.form{padding:20px}.brand small{display:none}.navcta{padding:0 12px;font-size:13px}select{width:108px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
 </style>
+<script>/* افتح المنصة مباشرة عند تحديث الصفحة بدون ما تبان الصفحة الرئيسية */
+try { if (location.hash === "#app" && JSON.parse(localStorage.getItem("ai_early_signup") || "null")?.phone) document.documentElement.classList.add("ap-boot"); } catch (e) {}
+</script>
+<style>html.ap-boot .ap{display:grid;animation:none}html.ap-boot{overflow:hidden}</style>
 </head>
 <body>
 
@@ -1573,7 +1579,7 @@ if (CONFIG.trialEnabled) {
       setTimeout(() => document.getElementById("phone1")?.focus({ preventScroll: true }), 500);
       toast("سجّل رقمك أول عشان تنفتح لك المنصة", "info"); return;
     }
-    ap.classList.add("open"); document.documentElement.classList.add("ap-lock");
+    ap.classList.add("open"); document.documentElement.classList.add("ap-lock"); document.documentElement.classList.remove("ap-boot");
     if (location.hash !== "#app") location.hash = "app";
     setTimeout(() => { input.focus({ preventScroll: true }); toBottom(false); }, 60);
   };
@@ -1884,6 +1890,7 @@ if (CONFIG.trialEnabled) {
   restore();
   if (saved && saved.phone) window.__unlockTrial(saved.phone);
   if (location.hash === "#app" && saved && saved.phone) openUI();
+  document.documentElement.classList.remove("ap-boot");
 }
 
 }
