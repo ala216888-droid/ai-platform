@@ -350,6 +350,46 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
 .vi .ok{width:16px;height:16px;color:var(--teal)}
 .vi .lk{width:14px;height:14px;color:var(--mute)}
 @media(max-width:600px){.mdb span{display:none}.mdb.on span{display:inline}.vbtn span{display:none}}
+.ap-vm{color:var(--teal)}
+.vm{position:fixed;inset:0;z-index:118;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 18px 34px;background:radial-gradient(700px 520px at 50% 45%,rgba(29,78,216,.35),transparent 70%),#03060E;overflow:hidden;color:var(--ink)}
+.vm .lu{width:22px;height:22px}
+.vm-bg{position:absolute;inset:0;pointer-events:none}
+.vm-bg i{position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),rgba(56,189,248,.25) 40%,rgba(45,212,191,.05) 70%);animation:bub 14s ease-in-out infinite}
+.vm-bg i:nth-child(1){width:90px;height:90px;left:12%;top:70%;animation-duration:13s}
+.vm-bg i:nth-child(2){width:46px;height:46px;left:78%;top:62%;animation-duration:9s;animation-delay:-3s}
+.vm-bg i:nth-child(3){width:130px;height:130px;left:70%;top:14%;animation-duration:17s;animation-delay:-6s;opacity:.35}
+.vm-bg i:nth-child(4){width:30px;height:30px;left:24%;top:22%;animation-duration:8s;animation-delay:-2s}
+.vm-bg i:nth-child(5){width:64px;height:64px;left:48%;top:82%;animation-duration:11s;animation-delay:-5s}
+.vm-bg i:nth-child(6){width:22px;height:22px;left:60%;top:36%;animation-duration:7s;animation-delay:-1s}
+.vm-bg i:nth-child(7){width:110px;height:110px;left:4%;top:30%;animation-duration:19s;animation-delay:-8s;opacity:.3}
+.vm-bg i:nth-child(8){width:38px;height:38px;left:88%;top:84%;animation-duration:10s;animation-delay:-4s}
+@keyframes bub{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(18px,-40px) scale(1.08)}50%{transform:translate(-14px,-80px) scale(.95)}75%{transform:translate(10px,-36px) scale(1.04)}}
+.vm-top{position:relative;width:100%;max-width:780px;display:flex;justify-content:space-between;align-items:center}
+.vm-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:14px}
+.vm-badge .lu{width:17px;height:17px;color:var(--teal)}
+.vm-center{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;width:100%;max-width:640px}
+.vm-orb{position:relative;width:min(300px,62vw);aspect-ratio:1;display:grid;place-items:center;margin-bottom:22px}
+.vm-orb .ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(56,189,248,.35);background:radial-gradient(circle,rgba(56,189,248,.12),transparent 65%);animation:ringp 3.2s ease-out infinite}
+.vm-orb .r2{animation-delay:1.05s}.vm-orb .r3{animation-delay:2.1s}
+@keyframes ringp{0%{transform:scale(.62);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+.vm-logo{position:relative;width:58%;aspect-ratio:1;border-radius:30%;filter:drop-shadow(0 0 50px rgba(56,189,248,.65));animation:breathe 4s ease-in-out infinite;transition:transform .12s ease}
+.vm-logo svg{width:100%;height:100%}
+.vm[data-s="listen"] .ring{border-color:rgba(45,212,191,.7);animation-duration:1.4s}
+.vm[data-s="listen"] .vm-logo{animation:breathe 1.2s ease-in-out infinite}
+.vm[data-s="think"] .vm-logo{animation:spinl 2.4s linear infinite}
+@keyframes spinl{to{transform:rotate(360deg)}}
+.vm[data-s="think"] .ring{animation-duration:2s;border-style:dashed}
+.vm[data-s="speak"] .ring{border-color:rgba(125,211,252,.8);animation-duration:1s}
+.vm-logo.bump{transform:scale(1.1)}
+.vm-status{margin:0;font:700 22px Alexandria,sans-serif}
+.vm-cap{margin:0;min-height:52px;color:#B6C5E3;font-size:16px;line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.vm-ctrl{position:relative;display:flex;gap:18px}
+.vm-btn{width:68px;height:68px;border-radius:50%;border:1px solid rgba(148,180,255,.25);background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .2s,background .2s}
+.vm-btn:hover{transform:scale(1.06)}
+.vm-btn .lu{width:28px;height:28px}
+.vm-btn.on{background:#DC2626;border-color:#DC2626;animation:recp 1.3s ease-in-out infinite}
+.vm-btn.end{background:rgba(220,38,38,.18);border-color:rgba(220,38,38,.5);color:#FCA5A5}
+@media(prefers-reduced-motion:reduce){.vm-bg i,.vm-orb .ring,.vm-logo{animation:none!important}}
 .ap-mic{flex:none;width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#C7D7F5;display:grid;place-items:center;cursor:pointer;position:relative;transition:background .2s,color .2s}
 .ap-mic:hover{background:rgba(255,255,255,.08);color:var(--ink)}
 .ap-mic .lu{width:20px;height:20px}
@@ -748,6 +788,7 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
               <button type="button" class="vi lockd" role="menuitem" data-lock="الإصدار الاحترافي"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" /> <path d="M5 21h14" /></svg><span><b>احترافي</b><small>أقوى النماذج للمهام الصعبة</small></span><svg class="lk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></button>
             </div>
           </div>
+          <button class="ap-mic ap-vm" type="button" id="apVm" aria-label="الوضع الصوتي" title="الوضع الصوتي"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10v3" /> <path d="M6 6v11" /> <path d="M10 3v18" /> <path d="M14 8v7" /> <path d="M18 5v13" /> <path d="M22 10v3" /></svg></button>
           <button class="ap-mic" type="button" id="apMic" aria-label="تكلّم" title="تكلّم بالعربي"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <rect x="9" y="2" width="6" height="13" rx="3" /></svg></button>
           <button class="ap-send" type="submit" id="apSend" aria-label="إرسال" disabled><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /> <path d="M12 19V5" /></svg></button>
         </div>
@@ -782,6 +823,22 @@ html.ap-lock,html.ap-lock body{overflow:hidden}
       <button type="button" class="ap-ico" id="pvClose" aria-label="إغلاق المعاينة"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg></button>
     </header>
     <div class="pv-stage"><iframe id="pvFrame" title="معاينة الكود" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe></div>
+  </div>
+</div>
+<div class="vm" id="vm" hidden data-trial role="dialog" aria-modal="true" aria-label="الوضع الصوتي">
+  <div class="vm-bg" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="vm-top"><span class="vm-badge"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10v3" /> <path d="M6 6v11" /> <path d="M10 3v18" /> <path d="M14 8v7" /> <path d="M18 5v13" /> <path d="M22 10v3" /></svg>الوضع الصوتي</span><span class="ap-pill" id="vmLeft"></span></div>
+  <div class="vm-center">
+    <div class="vm-orb" id="vmOrb">
+      <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+      <div class="vm-logo"><svg viewBox="0 0 80 80" fill="none"><use href="#logo"/></svg></div>
+    </div>
+    <p class="vm-status" id="vmStatus">اضغط المايك وتكلّم</p>
+    <p class="vm-cap" id="vmCap"></p>
+  </div>
+  <div class="vm-ctrl">
+    <button type="button" class="vm-btn" id="vmMic" aria-label="تكلّم"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <rect x="9" y="2" width="6" height="13" rx="3" /></svg></button>
+    <button type="button" class="vm-btn end" id="vmEnd" aria-label="إنهاء"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg></button>
   </div>
 </div>
 <div class="toast" id="toast" role="status" data-trial></div>
@@ -1077,17 +1134,19 @@ if (CONFIG.trialEnabled) {
   const arVoice = () => { const vs = speechSynthesis.getVoices(); return vs.find(v => /^ar(-|_)SA/i.test(v.lang)) || vs.find(v => /^ar/i.test(v.lang)) || null; };
   if (TTS) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; }
   const stopSpeak = () => { if (TTS) speechSynthesis.cancel(); if (speakingBtn) { speakingBtn.innerHTML = IC.speak + "استماع"; speakingBtn = null; } };
-  const speak = (text, btn) => {
-    if (!TTS) return;
+  const speak = (text, btn, onDone) => {
+    if (!TTS) { onDone && onDone(); return; }
     stopSpeak();
     const parts = speakable(text).match(/[^.!؟?\n،]{1,180}[.!؟?\n،]?/g) || [];
-    if (!parts.length) return;
+    if (!parts.length) { onDone && onDone(); return; }
     const v = arVoice();
-    if (!v) toast("ما لقينا صوت عربي في جهازك، بيقرأ بأقرب صوت متاح.");
+    if (!v && !vmOn) toast("ما لقينا صوت عربي في جهازك، بيقرأ بأقرب صوت متاح.");
     if (btn) { speakingBtn = btn; btn.innerHTML = IC.stop + "إيقاف"; }
+    const logo = document.querySelector(".vm-logo");
     parts.forEach((p, i) => {
       const u = new SpeechSynthesisUtterance(p.trim()); u.lang = v ? v.lang : "ar-SA"; if (v) u.voice = v; u.rate = 1;
-      if (i === parts.length - 1) u.onend = () => { if (speakingBtn === btn) stopSpeak(); };
+      u.onboundary = () => { if (logo) { logo.classList.add("bump"); setTimeout(() => logo.classList.remove("bump"), 110); } };
+      if (i === parts.length - 1) u.onend = () => { if (speakingBtn === btn) stopSpeak(); onDone && onDone(); };
       speechSynthesis.speak(u);
     });
   };
@@ -1109,6 +1168,39 @@ if (CONFIG.trialEnabled) {
     rec.onend = () => { const txt = input.value.trim(); stopListen(); if (txt) { viaVoice = true; ask(txt); } };
     try { rec.start(); listening = true; micBtn.classList.add("rec"); micBtn.setAttribute("aria-label", "إيقاف التسجيل"); input.value = ""; input.placeholder = "أسمعك… تكلّم الحين 🎙️"; } catch (e) { stopListen(); }
   });
+
+  /* ---------- الوضع الصوتي (شاشة كاملة) ---------- */
+  const vmEl = $("vm"), vmStatus = $("vmStatus"), vmCap = $("vmCap"), vmMic = $("vmMic");
+  let vmOn = false, vmRec = null;
+  const vmSet = (s, msg) => { vmEl.dataset.s = s; vmStatus.textContent = msg; vmMic.classList.toggle("on", s === "listen"); $("vmLeft").textContent = remaining > 0 ? `باقي ${remaining} ${plural(remaining)}` : "انتهت التجربة"; };
+  const vmListen = () => {
+    if (!vmOn) return;
+    if (remaining <= 0) { vmSet("idle", "خلصت رسائلك التجريبية 🎉"); vmCap.textContent = "خصمك محجوز، ونبلغك أول ما تنطلق المنصة."; return; }
+    if (!SR) { vmSet("idle", "المتصفح ما يدعم المايك"); vmCap.textContent = "جرّب Chrome أو Safari على جوالك."; return; }
+    stopSpeak();
+    vmRec = new SR(); vmRec.lang = "ar-SA"; vmRec.interimResults = true; vmRec.continuous = false;
+    let said = "";
+    vmRec.onresult = e => { said = [...e.results].map(r => r[0].transcript).join(" ").trim(); vmCap.textContent = said; };
+    vmRec.onerror = e => { if (e.error === "not-allowed" || e.error === "service-not-allowed") { vmSet("idle", "اسمح للموقع يستخدم المايك 🎤"); } };
+    vmRec.onend = () => {
+      vmRec = null; if (!vmOn) return;
+      if (said) { vmSet("think", "يفكّر…"); viaVoice = true; ask(said); }
+      else vmSet("idle", "اضغط المايك وتكلّم");
+    };
+    try { vmRec.start(); vmSet("listen", "أسمعك…"); vmCap.textContent = ""; } catch (e) { vmSet("idle", "اضغط المايك وتكلّم"); }
+  };
+  const vmReply = text => {
+    if (!vmOn) return false;
+    vmSet("speak", "يتكلم…"); vmCap.textContent = speakable(text).slice(0, 220);
+    speak(text, null, () => { if (vmOn) { vmSet("idle", "دورك…"); setTimeout(vmListen, 350); } });
+    return true;
+  };
+  const vmOpen = () => { if (busy) return; vmOn = true; vmEl.hidden = false; vmCap.textContent = ""; vmSet("idle", "اضغط المايك وتكلّم"); setTimeout(vmListen, 400); };
+  const vmClose = () => { vmOn = false; if (vmRec) { try { vmRec.abort(); } catch (e) {} vmRec = null; } stopSpeak(); vmEl.hidden = true; };
+  $("apVm").addEventListener("click", vmOpen);
+  $("vmEnd").addEventListener("click", vmClose);
+  vmMic.addEventListener("click", () => { if (vmRec) { vmRec.stop(); return; } if (vmEl.dataset.s === "speak") { stopSpeak(); vmSet("idle", "دورك…"); } if (!busy) vmListen(); });
+  if (!SR && !TTS) $("apVm").hidden = true;
   /* ---------- الرسائل ---------- */
   const userMsg = text => {
     const d = document.createElement("div"); d.className = "cm u";
@@ -1185,7 +1277,7 @@ if (CONFIG.trialEnabled) {
         if (j.limit) LIMIT = j.limit;
         history.push({ role: "assistant", content: j.reply }); save();
         await typeOut(d, j.reply); actions(d, j.reply); setLeft(j.remaining);
-        if (viaVoice) { viaVoice = false; speak(j.reply, d.querySelector('[data-act="speak"]')); }
+        if (viaVoice) { viaVoice = false; if (!vmReply(j.reply)) speak(j.reply, d.querySelector('[data-act="speak"]')); }
         if (j.cut && remaining > 0) { const c = document.createElement("button"); c.type = "button"; c.className = "cont"; c.dataset.cont = ""; c.textContent = "الرد انقطع — كمّل ↩"; d.querySelector(".body").appendChild(c); }
       } else {
         d.classList.remove("busy");
@@ -1197,6 +1289,7 @@ if (CONFIG.trialEnabled) {
       d.querySelector(".md").innerHTML = `<div class="cerr">تعذّر الاتصال، تأكد من الإنترنت.<button type="button" data-retry>إعادة المحاولة</button></div>`;
     }
     busy = false; updateSend(); if (atBottom()) toBottom();
+    if (vmOn && vmEl.dataset.s === "think") { viaVoice = false; vmSet("idle", "صار خطأ، اضغط المايك وجرّب مرة ثانية"); }
   };
   const ask = text => {
     text = text.trim(); if (!text || busy || !phone || remaining <= 0) return;
@@ -1218,7 +1311,7 @@ if (CONFIG.trialEnabled) {
   };
   window.__openApp = () => openUI();
   const closeUI = () => {
-    stopSpeak(); if (listening && rec) rec.abort();
+    stopSpeak(); if (listening && rec) rec.abort(); if (vmOn) vmClose();
     ap.classList.remove("open", "side"); document.documentElement.classList.remove("ap-lock");
     if (location.hash === "#app") history_back();
   };
@@ -1226,7 +1319,7 @@ if (CONFIG.trialEnabled) {
   addEventListener("hashchange", () => { if (location.hash !== "#app" && ap.classList.contains("open")) { ap.classList.remove("open", "side"); document.documentElement.classList.remove("ap-lock"); } });
   document.addEventListener("click", e => { if (e.target.closest("[data-open-app]")) { e.preventDefault(); openUI(); } });
   $("apClose").addEventListener("click", closeUI);
-  addEventListener("keydown", e => { if (e.key === "Escape" && !cn.hidden) { closeCn(); return; } if (e.key === "Escape" && !pv.hidden) { closePreview(); return; } if (e.key === "Escape" && ap.classList.contains("open")) { if (ap.classList.contains("side")) ap.classList.remove("side"); else closeUI(); } });
+  addEventListener("keydown", e => { if (e.key === "Escape" && vmOn) { vmClose(); return; } if (e.key === "Escape" && !cn.hidden) { closeCn(); return; } if (e.key === "Escape" && !pv.hidden) { closePreview(); return; } if (e.key === "Escape" && ap.classList.contains("open")) { if (ap.classList.contains("side")) ap.classList.remove("side"); else closeUI(); } });
   $("apMenu").addEventListener("click", () => ap.classList.add("side"));
   $("apShade").addEventListener("click", () => ap.classList.remove("side"));
 
