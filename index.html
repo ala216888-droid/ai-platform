@@ -1204,33 +1204,58 @@ if (CONFIG.trialEnabled) {
   const vmEl = $("vm"), vmStatus = $("vmStatus"), vmCap = $("vmCap"), vmMic = $("vmMic");
   let vmOn = false, vmRec = null;
   const vmSet = (s, msg) => { vmEl.dataset.s = s; vmStatus.textContent = msg; vmMic.classList.toggle("on", s === "listen"); $("vmLeft").textContent = remaining > 0 ? `باقي ${remaining} ${plural(remaining)}` : "انتهت التجربة"; };
+  let vmFinish = null;
   const vmListen = () => {
     if (!vmOn) return;
     if (remaining <= 0) { vmSet("idle", "خلصت رسائلك التجريبية 🎉"); vmCap.textContent = "خصمك محجوز، ونبلغك أول ما تنطلق المنصة."; return; }
     if (!SR) { vmSet("idle", "المتصفح ما يدعم المايك"); vmCap.textContent = "جرّب Chrome أو Safari على جوالك."; return; }
+    if (busy) return;
     stopSpeak();
-    vmRec = new SR(); vmRec.lang = "ar-SA"; vmRec.interimResults = true; vmRec.continuous = false;
-    let said = "";
-    vmRec.onresult = e => { said = [...e.results].map(r => r[0].transcript).join(" ").trim(); vmCap.textContent = said; };
-    vmRec.onerror = e => { if (e.error === "not-allowed" || e.error === "service-not-allowed") { vmSet("idle", "اسمح للموقع يستخدم المايك 🎤"); } };
-    vmRec.onend = () => {
-      vmRec = null; if (!vmOn) return;
-      if (said) { vmSet("think", "يفكّر…"); viaVoice = true; ask(said); }
-      else vmSet("idle", "اضغط المايك وتكلّم");
+    const r = new SR(); vmRec = r; r.lang = "ar-SA"; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+    let said = "", done = false, silenceT = 0, noSpeechT = 0, hardT = 0, errMsg = "";
+    const clear = () => { clearTimeout(silenceT); clearTimeout(noSpeechT); clearTimeout(hardT); };
+    const finish = () => {
+      if (done) return; done = true; clear(); vmFinish = null;
+      if (vmRec === r) vmRec = null;
+      try { r.abort(); } catch (e) {}
+      if (!vmOn) return;
+      const txt = said.trim();
+      if (txt) { vmCap.textContent = txt; vmSet("think", "يفكّر…"); viaVoice = true; ask(txt); }
+      else { vmSet("idle", errMsg || "ما سمعت صوتك 🤔"); vmCap.textContent = errMsg ? "" : "اضغط المايك وتكلّم بصوت واضح، وتأكد إن المايك شغّال."; }
     };
-    try { vmRec.start(); vmSet("listen", "أسمعك…"); vmCap.textContent = ""; } catch (e) { vmSet("idle", "اضغط المايك وتكلّم"); }
+    vmFinish = finish;
+    r.onresult = e => {
+      said = [...e.results].map(x => x[0].transcript).join(" ").replace(/\s+/g, " ").trim();
+      vmCap.textContent = said || "…";
+      clearTimeout(noSpeechT); clearTimeout(silenceT);
+      if (said) silenceT = setTimeout(finish, 1500);   // سكت ثانية ونص = خلص كلامه
+    };
+    r.onerror = e => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") errMsg = "اسمح للموقع يستخدم المايك 🎤";
+      else if (e.error === "audio-capture") errMsg = "ما لقينا مايك في الجهاز 🎤";
+      else if (e.error === "network") errMsg = "التعرّف على الصوت يحتاج إنترنت";
+      if (e.error !== "aborted") finish();
+    };
+    r.onend = () => finish();
+    noSpeechT = setTimeout(finish, 9000);     // ما تكلّم أبداً
+    hardT = setTimeout(finish, 30000);        // حد أقصى للتسجيل
+    try { r.start(); vmSet("listen", "أسمعك…"); vmCap.textContent = "تكلّم، ولما تخلص اسكت لحظة أو اضغط المايك"; }
+    catch (e) { done = true; clear(); vmRec = null; vmFinish = null; vmSet("idle", "اضغط المايك وتكلّم"); }
   };
   const vmReply = text => {
     if (!vmOn) return false;
     vmSet("speak", "يتكلم…"); vmCap.textContent = speakable(text).slice(0, 220);
-    speak(text, null, () => { if (vmOn) { vmSet("idle", "دورك…"); setTimeout(vmListen, 350); } });
+    let fired = false;
+    const next = () => { if (fired) return; fired = true; clearTimeout(wd); if (vmOn && vmEl.dataset.s === "speak") { vmSet("idle", "دورك…"); setTimeout(vmListen, 350); } };
+    const wd = setTimeout(() => { stopSpeak(); next(); }, 5000 + speakable(text).length * 110);   // احتياط لو المتصفح ما بلّغ بنهاية الصوت
+    speak(text, null, next);
     return true;
   };
   const vmOpen = () => { if (busy) return; vmOn = true; vmEl.hidden = false; vmCap.textContent = ""; vmSet("idle", "اضغط المايك وتكلّم"); setTimeout(vmListen, 400); };
-  const vmClose = () => { vmOn = false; if (vmRec) { try { vmRec.abort(); } catch (e) {} vmRec = null; } stopSpeak(); vmEl.hidden = true; };
+  const vmClose = () => { vmOn = false; if (vmFinish) vmFinish(); if (vmRec) { try { vmRec.abort(); } catch (e) {} vmRec = null; } stopSpeak(); vmEl.hidden = true; };
   $("apVm").addEventListener("click", vmOpen);
   $("vmEnd").addEventListener("click", vmClose);
-  vmMic.addEventListener("click", () => { if (vmRec) { vmRec.stop(); return; } if (vmEl.dataset.s === "speak") { stopSpeak(); vmSet("idle", "دورك…"); } if (!busy) vmListen(); });
+  vmMic.addEventListener("click", () => { if (vmFinish) { vmFinish(); return; } if (vmEl.dataset.s === "speak") { stopSpeak(); vmSet("idle", "دورك…"); } if (!busy) vmListen(); });
   if (!SR && !TTS) $("apVm").hidden = true;
   /* ---------- الرسائل ---------- */
   const userMsg = text => {
