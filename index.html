@@ -123,6 +123,24 @@ input{flex:1;width:100%}
 @keyframes c3dGlare{0%,100%{transform:translateX(-30%)}50%{transform:translateX(30%)}}
 @keyframes c3dShadow{0%,100%{transform:scaleX(.9);opacity:.8}50%{transform:scaleX(1);opacity:.55}}
 @media(prefers-reduced-motion:reduce){.c3d-rot,.c3d-glare,.c3d-shadow{animation:none}.c3d-rot{transform:rotateY(-18deg) rotateX(8deg)}}
+/* ===== تأثيرات الماوس ===== */
+.fx-glow,.fx-ring{position:fixed;left:0;top:0;pointer-events:none;z-index:60;opacity:0;transition:opacity .4s}
+.fx-glow{width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.16),rgba(45,212,191,.06) 35%,transparent 65%);mix-blend-mode:screen}
+.fx-ring{width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:1.5px solid rgba(125,211,252,.55);box-shadow:0 0 18px rgba(56,189,248,.45),inset 0 0 10px rgba(56,189,248,.25);transition:opacity .4s,width .25s,height .25s,margin .25s,background .25s,border-color .25s}
+.fx-ring.hot{width:58px;height:58px;margin:-29px 0 0 -29px;background:rgba(56,189,248,.1);border-color:rgba(45,212,191,.8)}
+.fx-ring.down{width:24px;height:24px;margin:-12px 0 0 -12px}
+html.fx-on .fx-glow,html.fx-on .fx-ring{opacity:1}
+html.ap-lock .fx-glow,html.ap-lock .fx-ring,html.ap-lock .fx-spark{display:none}
+.fx-spark{position:fixed;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;pointer-events:none;z-index:61;background:#7DD3FC;box-shadow:0 0 10px 2px rgba(56,189,248,.8);animation:fxSpark .8s ease-out forwards}
+@keyframes fxSpark{to{transform:translate(var(--dx),var(--dy)) scale(.1);opacity:0}}
+.fx-burst{position:fixed;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;pointer-events:none;z-index:61;border:2px solid rgba(125,211,252,.9);animation:fxBurst .6s ease-out forwards}
+@keyframes fxBurst{to{transform:scale(9);opacity:0}}
+/* ضوء يتبع الماوس داخل البطاقات */
+.card,.rt-card,.form{--mx:50%;--my:50%}
+.card::before,.rt-card::before,.form::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(56,189,248,.14),transparent 45%);z-index:0}
+.card:hover::before,.rt-card:hover::before,.form:hover::before{opacity:1}
+.card>*,.rt-card>*{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){.fx-spark,.fx-burst{display:none}}
 .caption{text-align:center;margin-top:6px;color:var(--mute);font-size:15px}
 .caption b{color:var(--ink);font-weight:500}
 
@@ -1047,6 +1065,41 @@ try { if (location.hash === "#app" && JSON.parse(localStorage.getItem("ai_early_
     const t = `rotateX(${(-y * 14).toFixed(2)}deg) rotateY(${(x * 14).toFixed(2)}deg)`;
     s.style.transform = t; c.style.transform = t + " translateZ(40px)";
   }, { passive: true });
+})();
+/* ===== تأثيرات الماوس: توهج + حلقة + شرارات ===== */
+(() => {
+  if (!matchMedia("(pointer:fine)").matches) return;
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const glow = document.createElement("div"), ring = document.createElement("div");
+  glow.className = "fx-glow"; ring.className = "fx-ring"; document.body.append(glow, ring);
+  let x = innerWidth / 2, y = innerHeight / 2, gx = x, gy = y, rx = x, ry = y, last = 0, lx = x, ly = y;
+  const tick = () => {
+    gx += (x - gx) * .08; gy += (y - gy) * .08; rx += (x - rx) * .35; ry += (y - ry) * .35;
+    glow.style.transform = `translate(${gx}px,${gy}px)`; ring.style.transform = `translate(${rx}px,${ry}px)`;
+    requestAnimationFrame(tick);
+  };
+  tick();
+  addEventListener("pointermove", e => {
+    x = e.clientX; y = e.clientY; document.documentElement.classList.add("fx-on");
+    ring.classList.toggle("hot", !!e.target.closest("a,button,input,select,textarea,label,[data-open-app]"));
+    const c = e.target.closest(".card,.rt-card,.form");
+    if (c) { const r = c.getBoundingClientRect(); c.style.setProperty("--mx", (x - r.left) + "px"); c.style.setProperty("--my", (y - r.top) + "px"); }
+    const now = performance.now();
+    if (!calm && now - last > 45 && Math.hypot(x - lx, y - ly) > 18 && !document.documentElement.classList.contains("ap-lock")) {
+      last = now; lx = x; ly = y;
+      const s = document.createElement("i"); s.className = "fx-spark";
+      s.style.left = x + "px"; s.style.top = y + "px";
+      s.style.setProperty("--dx", (Math.random() * 30 - 15) + "px"); s.style.setProperty("--dy", (Math.random() * 20 + 8) + "px");
+      document.body.appendChild(s); setTimeout(() => s.remove(), 850);
+    }
+  }, { passive: true });
+  addEventListener("pointerdown", e => {
+    ring.classList.add("down"); if (calm || document.documentElement.classList.contains("ap-lock")) return;
+    const b = document.createElement("i"); b.className = "fx-burst"; b.style.left = e.clientX + "px"; b.style.top = e.clientY + "px";
+    document.body.appendChild(b); setTimeout(() => b.remove(), 650);
+  });
+  addEventListener("pointerup", () => ring.classList.remove("down"));
+  document.addEventListener("mouseleave", () => document.documentElement.classList.remove("fx-on"));
 })();
 /* ===== الإعدادات ===== */
 const CONFIG = {
